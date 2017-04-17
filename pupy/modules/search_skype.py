@@ -17,7 +17,7 @@ from pupylib.utils.term import colorize
 
 __class_name__="SearchSkype"
 
-@config(cat="gather", compatibilities=['darwin'], tags=['gather', 'skype'])
+@config(cat="gather", compatibilities=['darwin', 'windows'], tags=['gather', 'skype'])
 class SearchSkype(PupyModule):
 
     """

